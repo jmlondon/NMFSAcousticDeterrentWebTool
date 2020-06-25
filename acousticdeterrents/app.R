@@ -12,10 +12,16 @@ library(formattable)
 # max.ping.dur <- 9 #sec
 # min.silent <- 4 #sec
 # propagation <- 15
+publishing = T
 
-source(here('Functions.R'))
-source(here('Constants.R'))
 
+if(publishing){
+    source(here('R','Functions.R'))
+    source(here('R','Constants.R'))
+}else{
+    source(here('acousticdeterrents','R','Functions.R'))
+    source(here('acousticdeterrents','R','Constants.R'))
+}
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -69,7 +75,7 @@ ui <- fluidPage(
                                 tableOutput("multiple.freq")
                             )
                         )
-                        )
+               )
     )
 )
 
@@ -82,6 +88,7 @@ server <- function(input, output) {
     log10dur <- reactive(log10(dur())*10)
     
     output$single.freq <- function(){
+        
         result.table.s <- m %>%
             mutate(isopleth = get.isopleth(max.loudness = input$max.loudness,
                                            adjustment = get.adjustment(freq = input$frequency,
@@ -101,7 +108,7 @@ server <- function(input, output) {
                                      cell_spec(isopleth, background="green",color="white",bold=T))) %>%
             kable(escape=FALSE) %>% 
             kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
-            
+        
     }
     
     output$multiple.freq <- function(){
@@ -128,7 +135,7 @@ server <- function(input, output) {
             select(hearing.group,isopleth)
         
         user.table.m %>%
-        mutate(isopleth = round(isopleth,digits=2)) %>%
+            mutate(isopleth = round(isopleth,digits=2)) %>%
             mutate(isopleth = ifelse(isopleth>100,
                                      cell_spec(isopleth,background="red",color="white",bold=T),
                                      cell_spec(isopleth, background="green",color="white",bold=T))) %>%
