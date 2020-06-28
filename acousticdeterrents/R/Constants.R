@@ -10,6 +10,12 @@ hearing.group <- c("Low-frequency cetaceans",
                    "Phocids",
                    "Otariids")
 
+hgkey <- c(`Low-frequency cetaceans` = "Low-frequency cetaceans: baleen whales",
+                                `Mid-frequency cetaceans` = "Mid-frequency cetaceans: dolphins, toothed whales, and beaked whales",
+                                `High-frequency cetaceans` = "High-frequency cetaceans: harbor and Dall's porpoise, and pygmy and dwarf sperm whales",
+                                Phocids = "Phocids: true seals",
+                                Otariids = "Otariids: sea lions and pinnipeds")
+
 groups <- data.frame(
   hearing.group = hearing.group, 
   SELcum = c(199,198,173,201,219))
@@ -23,3 +29,15 @@ weighting <- data.frame(stringsAsFactors = FALSE,
                         C = c(0.13, 1.2, 1.36, 0.75,0.64))
 
 m <- dplyr::full_join(weighting,groups)
+
+
+# Notes for tooltips ------------------------------------------------------
+
+frequency.note <- "Note: 1000 Hz = 1 kHz (e.g., 400 Hz = 0.4 kHz)"
+loudness.note <- "Note: If the device is non-programmable and capable of producing multiple source levels, the loudness must be inputed"
+duration.note <- "Note: 1000 milliseconds = 1 second (e.g., 100 milleseconds = 0.1 second)"
+
+
+# Long text for intro etc -------------------------------------------------
+ intro.text <- "Welcome to the sound-producing (acoustic) web tool! You can use this tool to determine whether your device is allowed under NMFS’ National Guidelines for Nonlethally Deterring Marine Mammals. This tool is for  non-impulsive devices with an underwater source level > 170 dB.(RMS, root-mean-square sound pressure level) Simply enter the device’s specifications in the appropriate calculator.  If you cannot determine the specifications of the device, contact the manufacturer.  You must enter all required information in the calculator to determine whether your device is approved for use.  If the device, as you intend to use it, does not exceed NMFS’s evaluation criteria, you will receive a certificate after completing the calculator. You will need to print or save a copy of this certification and furnish upon request. The device must be used according to the specifications listed on the certificate. Certificates are valid for one year from date of issue."     
+
