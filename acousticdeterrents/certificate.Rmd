@@ -1,0 +1,66 @@
+---
+title: "This is a mockup certificate"
+author: "M. Siple"
+date: "6/28/2020"
+output: 
+  html_document:
+    self_contained: yes
+    css: corp-styles.css
+    highlight: pygments
+params:
+  frequency: NA
+  max_loudness: NA
+  max_ping_dur: NA
+  min_silent: NA
+  name: NA
+  devicename: NA
+  characteristics: NA
+---
+
+<img src="NOAA_logo.svg" style="float:right;top:0px;right:0px;" height=100 />
+
+<div class="watermark" align="center">CERTIFICATE</div>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#options(knitr.table.format = "html") 
+library(tidyverse)
+library(kableExtra)
+
+frequency = params$frequency
+max_loudness = params$max_loudness # also called "source level"
+max_ping_dur = params$max_ping_dur
+min_silent = params$min_silent
+name = params$name
+devicename = params$devicename
+characteristics = params$characteristics
+
+```
+
+## Certificate of approval
+
+INSERT NAME is approved to use the deterrent noted below according to the following specifications until [insert date one year from date of calculating/printing]. This deterrent is included under the National Guidelines for Non-lethally Deterring Marine Mammals.  INSERT NAME is not subject to the Marine Mammal Protection Act take prohibitions if the following deterrent is used in accordance with the below specifications.  
+
+
+
+Deterrent name: INSERT DET NAME
+
+Deterrent details: INSERT DETAILS
+
+Expiration date: EXP DATE (one year + today's date)
+
+
+
+Specifications entered:
+```{r echo = FALSE}
+
+  
+x <- data.frame(Specification = c("Deterrent frequency (kHz)",
+                                  "Source level (RMS SPL)",
+                                  "Ping/pulse duration (seconds)",
+                                  "Silent period between pings/pulses (seconds)"),
+                Value = c(30,170,2,4))
+x %>%
+  kable(escape=FALSE) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
