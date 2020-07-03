@@ -14,7 +14,7 @@ hgkey <- c(`Low-frequency cetaceans` = "Low-frequency cetaceans: baleen whales",
                                 `Mid-frequency cetaceans` = "Mid-frequency cetaceans: dolphins, toothed whales, and beaked whales",
                                 `High-frequency cetaceans` = "High-frequency cetaceans: harbor and Dall's porpoise, and pygmy and dwarf sperm whales",
                                 Phocids = "Phocids: true seals",
-                                Otariids = "Otariids: sea lions and pinnipeds")
+                                Otariids = "Otariids: sea lions and fur seals")
 
 groups <- data.frame(
   hearing.group = hearing.group, 

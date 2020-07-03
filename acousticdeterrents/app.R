@@ -11,7 +11,7 @@ library(shinythemes) # for theme
 # det.char (for report)
 # contact (for report)
 
-publishing = F
+publishing = TRUE
 
 
 if(publishing){
@@ -120,7 +120,7 @@ ui <- fluidPage(
                                   "Deterrent name:", value = "Enter the name of your deterrent"),
                         textAreaInput("characteristics","Deterrent characteristics, including assumptions:"),
                         radioButtons("whichfreq","Type of frequency",choices = c("Single","Multiple")),
-                        downloadButton(outputId = "cert", "Generate certificate"))
+                        downloadButton(outputId = "cert", "Generate certificate")) #nd of certificate tab
     )
 )
 
@@ -128,9 +128,13 @@ ui <- fluidPage(
 server <- function(input, output) {
     
     # Dervied variables
-    duty.cycle <- reactive(input$max_ping_dur/(input$max_ping_dur+input$min_silent))
+    duty.cycle <- reactive(input$max_ping_dur/(input$max_ping_dur + input$min_silent))
     dur <- reactive(duty.cycle() * 3600)
     log10dur <- reactive(log10(dur())*10)
+    
+    duty.cycle_m <- reactive(input$max_ping_dur_m/(input$max_ping_dur_m + input$min_silent_m))
+    dur_m <- reactive(duty.cycle_m() * 3600)
+    log10dur_m <- reactive(log10(dur_m())*10)
     
     output$single.freq <- function(){
         
@@ -175,7 +179,7 @@ server <- function(input, output) {
             mutate(isopleth = get.isopleth(max.loudness = input$max_loudness_m,
                                            adjustment = get.adjustment(freq = freq.by.group,
                                                                        wtpars = list(a=a,b=b,f1=f1,f2=f2,C=C)),
-                                           log10dur = log10dur(),
+                                           log10dur = log10dur_m(),
                                            selcumthresh = SELcum,
                                            propagation = propagation))
         
