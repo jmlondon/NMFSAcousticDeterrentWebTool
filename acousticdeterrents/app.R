@@ -11,7 +11,7 @@ library(shinythemes) # for theme
 # det.char (for report)
 # contact (for report)
 
-publishing = TRUE
+publishing = FALSE
 
 
 if(publishing){
@@ -34,29 +34,28 @@ ui <- fluidPage(
                         p(intro.text),
                         br(),
                         h3("Which tab should I use?"),
-                        p("For devices with a single pitch (frequency, kHz), such as a pinger, please use the 'Single frequency' tab For a device with a range of frequencies, please use the 'Multiple frequencies' tab."),
-                        p("If you have a device that is impulsive (i.e., capable of producing high sound levels in a short duration, broadband (multiple frequencies), please contact NMFS on how best to evaluate this device.
-                                                                  Examples of impulsive devices, include airguns, powerpulsed devices, and explosives. "),
+                        p("For devices with a single frequency (pitch, kHz), such as some standard pingers and underwater speakers, please use the 'Single frequency' tab For a device with a range of frequencies, such as startle devices and transducers, please use the 'Multiple frequencies' tab."),
+                        p("If you have a device that is impulsive (i.e., capable of producing high sound levels in a short duration, broadband (multiple frequencies), please consult the NMFS guidelines for safely deterring marine mammals.Examples of impulsive acoustic deterrents include power pulsed devices, low frequency broadband devices, and explosives. "),
                         br(),
                         
-                        h3("Once you determine what calculator to use"),
+                        h3("Once you determine which calculator to use"),
                         tags$ol(
-                            tags$li(" Complete fields with the device's sound-producing information"),
-                            tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:green", "green"), sep = "")), "if approved for use under NMFS' National Guidelines for Deterring Marine Mammals and a certificate will be provided."),
+                            tags$li(" Complete fields with the device's specifications"),
+                            tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:green", "green"), sep = "")), "if approved for use under NMFS's National Guidelines for Deterring Marine Mammals and a certificate will be provided."),
                             tags$li("The cells will contain the distance (meters) to onset of permanent hearing loss by each marine mammal hearing group."),
                             tags$li("You are required to deploy the device at least as far away as noted in the cell."),
-                            tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:red", "red"), sep = "")),": This device MAY NOT BE USED and a certificate will not be issued.")
+                            tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:red", "red"), sep = ""))," if the device does not meet NMFS's evaluation criteria; this device MAY NOT BE USED to deter marine mammals and a certificate will not be issued.")
                         ),
                         br(),
                         
                         h3("If your device is programmable"),
-                        p("You may adjust the inputs in a such a way that the device would not result in the onset of a permanent hearing loss, but the certificate will only apply to those inputs."),
+                        p("Insert the specifications for how you wish to use the device.  If those specifications do not meet NMFS’ evaluation criteria, you may adjust the inputs to determine whether a different combination of specifications would be approved (e.g., using a lower source level, lower duty cycle, increasing the minimum silent interval between acoustic signals, or decreasing the maximum acoustic signal duration will reduce the output distance)."),
                         br(),
                         
                         h3("NMFS Evaluation Criteria"),
                         tags$ol(
-                            tags$li("Acoustic deterrents must not result in the onset of a permanent threshold shift (PTS) > 100 m from the source with an hour exposure duration."),
-                            tags$li("PTS onset thresholds are based on", a("NMFS 2018 Technical Guidance",href=" https://www.fisheries.noaa.gov/national/marine-mammal-protection/marine-mammal-acoustic-technical-guidance")))
+                            tags$li("Acoustic deterrents that have the potential to result in the onset of a permanent threshold shift (PTS) at distances > 100 m from the source after an hour of exposure would not be approved."),
+                            tags$li("PTS onset thresholds are based on the", a("2018 revision to Technical Guidance for Assessing the Effects of Anthropogenic Sound on Marine Mammal Hearing (Version 2.0)",href=" https://www.fisheries.noaa.gov/national/marine-mammal-protection/marine-mammal-acoustic-technical-guidance")))
                         
                ),
                tabPanel("Single frequency",
@@ -151,14 +150,14 @@ server <- function(input, output) {
             select(hearing.group,isopleth)
         
         user.table.s %>%
-            rename(`Isopleth (meters)` = isopleth) %>%
+            rename(`Distance (meters)` = isopleth) %>%
             rename(`Hearing group` = hearing.group) %>%
             mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-            mutate('Passing' = ifelse(`Isopleth (meters)`>100,"No","<b> Yes </b>")) %>%
-            mutate(`Isopleth (meters)` = round(`Isopleth (meters)`,digits=2)) %>%
-            mutate(`Isopleth (meters)` = ifelse(`Isopleth (meters)`>100,
-                                                cell_spec(`Isopleth (meters)`,background="red",color="white",bold=T),
-                                                cell_spec(`Isopleth (meters)`, background="green",color="white",bold=T))) %>%
+            mutate('Passing' = ifelse(`Distance (meters)`>100,"No","<b> Yes </b>")) %>%
+            mutate(`Distance (meters)` = round(`Distance (meters)`,digits=2)) %>%
+            mutate(`Distance (meters)` = ifelse(`Distance (meters)`>100,
+                                                cell_spec(`Distance (meters)`,background="red",color="white",bold=T),
+                                                cell_spec(`Distance (meters)`, background="green",color="white",bold=T))) %>%
             kable(escape=FALSE) %>% 
             kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
     }
@@ -186,13 +185,13 @@ server <- function(input, output) {
         user.table.m <- result.table.m %>% 
             select(hearing.group,isopleth) %>%
             mutate(isopleth = round(isopleth,digits=2)) %>%
-            rename(`Isopleth (meters)` = isopleth) %>%
+            rename(`Distance (meters)` = isopleth) %>%
             rename(`Hearing group` = hearing.group) %>%
             mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-            mutate('Passing' = ifelse(`Isopleth (meters)`>100,"No","<b> Yes </b>")) %>%
-            mutate(`Isopleth (meters)` = ifelse(`Isopleth (meters)`>100,
-                                                cell_spec(`Isopleth (meters)`,background="red",color="white",bold=T),
-                                                cell_spec(`Isopleth (meters)`, background="green",color="white",bold=T))) %>%
+            mutate('Passing' = ifelse(`Distance (meters)`>100,"No","<b> Yes </b>")) %>%
+            mutate(`Distance (meters)` = ifelse(`Distance (meters)`>100,
+                                                cell_spec(`Distance (meters)`,background="red",color="white",bold=T),
+                                                cell_spec(`Distance (meters)`, background="green",color="white",bold=T))) %>%
             kable(escape=FALSE) %>% 
             kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
     }
