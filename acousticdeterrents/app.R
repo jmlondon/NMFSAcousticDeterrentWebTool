@@ -1,3 +1,5 @@
+
+
 library(shiny)
 library(tidyverse)
 library(here)
@@ -5,27 +7,36 @@ library(kableExtra)
 library(formattable)
 library(shinyBS) # for tooltips
 library(shinythemes) # for theme
+library(bootstraplib) # for custom NOAA colors theme
 
 # Still need to add
 # det.name (for report)
 # det.char (for report)
 # contact (for report)
 
-publishing = FALSE
+
+publishing = TRUE
 
 
 if(publishing){
     source(here('R','Functions.R'))
     source(here('R','Constants.R'))
+    source(here('R','Themes.R'))
 }else{
     source(here('acousticdeterrents','R','Functions.R'))
     source(here('acousticdeterrents','R','Constants.R'))
+    source(here('acousticdeterrents','R','Themes.R'))
 }
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-    theme = shinytheme("darkly"),
-    
+    #theme = "noaatheme_mcs.css",
+    titlePanel(div(column(width = 12,
+                          tags$img(src = "NOAA_logo.svg",width="60",height="60",align="right")))),
+    br(),
+    br(),
+    bootstrap(),
     # Application title
     titlePanel("Acoustic deterrents"),
     navbarPage(title = "",id="inTabset",
@@ -68,13 +79,24 @@ ui <- fluidPage(
                                 numericInput("max_loudness",
                                              "Maximum loudness in decibels (average source level at 1 m from source in RMS SPL)", value = 174),
                                 bsTooltip("max_loudness", loudness.note),
-                                numericInput("max_ping_dur",
-                                             "Maximum ping duration (seconds)",
-                                             value = 9),
-                                bsTooltip("max_ping_dur", duration.note),
-                                numericInput("min_silent",
-                                             "Minimum silent period between pings (seconds)",
-                                             value=4)
+                                radioButtons(inputId = 'duty_cycle_decide',
+                                             label = "Do you have a duty cycle to enter?",
+                                             choices = c("Yes"="direct",
+                                                         "No, calculate duty cycle from signal duration and silent period" = "calculate")),
+                                bsTooltip("duty_cycle_decide", duty.cycle.note),
+                                conditionalPanel(condition = "input.duty_cycle_decide=='direct'",
+                                                 numericInput("duty_cycle_manual",
+                                                              label = "Duty cycle (%):",value = 50, min = 1,max = 100)),
+                                conditionalPanel(condition = "input.duty_cycle_decide=='calculate'",
+                                                 numericInput("max_ping_dur",
+                                                              "Maximum acoustic signal duration (seconds)",
+                                                              value = 9),
+                                                 bsTooltip("max_ping_dur", duration.note),
+                                                 numericInput("min_silent",
+                                                              "Minimum silent period between acoustic signals (seconds)",
+                                                              value=4)
+                                                 )
+                                
                             ),
                             
                             # Show a plot of the generated distribution
@@ -96,13 +118,25 @@ ui <- fluidPage(
                                 numericInput("max_loudness_m",
                                              "Maximum loudness in decibels (average source level at 1 m from source in RMS SPL)", value = 174),
                                 bsTooltip("max_loudness_m", loudness.note),
-                                numericInput("max_ping_dur_m",
-                                             "Maximum ping duration (seconds)",
-                                             value = 9),
-                                bsTooltip("max_ping_dur_m", duration.note),
-                                numericInput("min_silent_m",
-                                             "Minimum silent period between pings (seconds)",
-                                             value=4)
+                                radioButtons(inputId = 'duty_cycle_decide_m',
+                                             label = "Do you have a duty cycle to enter?",
+                                             choices = c("Yes"="direct",
+                                                         "No, calculate duty cycle from signal duration and silent period" = "calculate")),
+                                bsTooltip("duty_cycle_decide_m", duty.cycle.note),
+                                conditionalPanel(condition = "input.duty_cycle_decide_m=='direct'",
+                                                 numericInput("duty_cycle_manual_m",
+                                                              label = "Duty cycle (%):",value = 50, min = 1,max = 100)
+                                ),
+                                conditionalPanel(condition = "input.duty_cycle_decide_m=='calculate'",
+                                                 numericInput("max_ping_dur_m",
+                                                              "Maximum acoustic signal duration (seconds)",
+                                                              value = 9),
+                                                 bsTooltip("max_ping_dur_m", duration.note),
+                                                 numericInput("min_silent_m",
+                                                              "Minimum silent period between acoustic signals (seconds)",
+                                                              value=4)
+                                                 )
+                                
                             ),
                             
                             # Show a plot of the generated distribution
@@ -125,13 +159,19 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-    
+  
     # Dervied variables
-    duty.cycle <- reactive(input$max_ping_dur/(input$max_ping_dur + input$min_silent))
+    duty.cycle.direct <- reactive(input$duty_cycle_manual/100)
+    duty.cycle.calculate <- reactive(input$max_ping_dur/(input$max_ping_dur + input$min_silent))
+    duty.cycle <- reactive(ifelse(input$duty_cycle_decide=="direct",duty.cycle.direct(),duty.cycle.calculate()))
+    
     dur <- reactive(duty.cycle() * 3600)
     log10dur <- reactive(log10(dur())*10)
     
-    duty.cycle_m <- reactive(input$max_ping_dur_m/(input$max_ping_dur_m + input$min_silent_m))
+    duty.cycle_m.direct <- reactive(input$duty_cycle_manual_m/100)
+    duty.cycle_m.calculate <- reactive(input$max_ping_dur_m/(input$max_ping_dur_m + input$min_silent_m))
+    duty.cycle_m <- reactive(ifelse(input$duty_cycle_decide_m=="direct",duty.cycle_m.direct(),duty.cycle_m.calculate()))
+    
     dur_m <- reactive(duty.cycle_m() * 3600)
     log10dur_m <- reactive(log10(dur_m())*10)
     
@@ -153,7 +193,7 @@ server <- function(input, output) {
             rename(`Distance (meters)` = isopleth) %>%
             rename(`Hearing group` = hearing.group) %>%
             mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-            mutate('Passing' = ifelse(`Distance (meters)`>100,"No","<b> Yes </b>")) %>%
+            mutate('Meets criteria' = ifelse(`Distance (meters)`>100,"No","<b> Yes </b>")) %>%
             mutate(`Distance (meters)` = round(`Distance (meters)`,digits=2)) %>%
             mutate(`Distance (meters)` = ifelse(`Distance (meters)`>100,
                                                 cell_spec(`Distance (meters)`,background="red",color="white",bold=T),
@@ -188,7 +228,7 @@ server <- function(input, output) {
             rename(`Distance (meters)` = isopleth) %>%
             rename(`Hearing group` = hearing.group) %>%
             mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-            mutate('Passing' = ifelse(`Distance (meters)`>100,"No","<b> Yes </b>")) %>%
+            mutate('Meets criteria' = ifelse(`Distance (meters)`>100,"No","<b> Yes </b>")) %>%
             mutate(`Distance (meters)` = ifelse(`Distance (meters)`>100,
                                                 cell_spec(`Distance (meters)`,background="red",color="white",bold=T),
                                                 cell_spec(`Distance (meters)`, background="green",color="white",bold=T))) %>%
