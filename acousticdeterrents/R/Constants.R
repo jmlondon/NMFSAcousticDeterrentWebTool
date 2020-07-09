@@ -32,7 +32,6 @@ m <- dplyr::full_join(weighting,groups)
 
 
 # Notes for tooltips ------------------------------------------------------
-
 frequency.note <- "Note: 1000 Hz = 1 kHz (e.g., 400 Hz = 0.4 kHz)"
 loudness.note <- "Note: If the device is non-programmable and capable of producing multiple source levels, the loudness must be inputed"
 duration.note <- "Note: 1000 milliseconds = 1 second (e.g., 100 milleseconds = 0.1 second)"
@@ -41,4 +40,32 @@ criteria.note <- "<b>Evaluation criteria:</b> Acoustic deterrents must not resul
 
 # Long text for intro etc -------------------------------------------------
  intro.text <- "Welcome to the acoustic deterrents web tool! You can use this tool to determine whether your device is allowed under NMFS’s National Guidelines for Nonlethally Deterring Marine Mammals. This tool is for  non-impulsive devices (e.g., acoustic alarms, pingers, transducers, predator sounds/alarm vocalizations using an underwater speaker) with an underwater source level ≥ 170 dB (RMS, root-mean-square sound pressure level). Simply enter the device specifications in the appropriate calculator.  If you cannot determine the specifications of the device, contact the manufacturer.  You must enter all required information in the calculator to determine whether your device is approved for deterring marine mammals.  If the device, as you intend to use it, meets NMFS’s evaluation criteria, you will receive a certificate of approval. You will need to print or save a copy of this certificate and furnish upon request. The device must be used according to the specifications listed on the certificate. Certificates are valid for one year from date of issue."     
+
+
+# Species list ------------------------------------------------------------
+x <-data.frame(
+    stringsAsFactors = FALSE,
+          seals.sealions = c("Steller (northern) sea lion","California sea lion",
+                             "Northern (Pribilof) fur seal","Harbor seal","Spotted seal",
+                             "Ringed seal","Ribbon seal","Gray seal",
+                             "Hawaiian monk seal","Northern elephant seal","Bearded seal",
+                             "Harp seal","Hooded seal"),
+      dolphins.porpoises = c("Atlantic white-sided dolphin","Pacific white-sided dolphin",
+                             "Common dolphin","Bottlenose dolphin",
+                             "Grampus (Risso's) dolphin","Spotted dolphin","Spinner dolphin",
+                             "Striped dolphin","Northern right whale dolphin",
+                             "Harbor porpoise","Dall's porpoise",
+                             "Rough-toothed dolphin",NA),
+          toothed.baleen = c("North Atlantic right whale","Gray whale","Fin whale","Minke whale",
+                             "Humpback whale","Sperm whale","Beluga whale",
+                             "False killer whale","Killer whale","Pilot whale",
+                             "Beaked whale","Bryde's whale",
+                             "Dwarf sperm whale")
+    )
+  # from spreadsheet, which is copied from mortality/ijury reporting form
+   
+
+seals.sealions <- x$seals.sealions[complete.cases(x$seals.sealions)]
+dolphins.porpoises <- x$dolphins.porpoises[complete.cases(x$dolphins.porpoises)]
+toothed.baleen <- x$toothed.baleen[complete.cases(x$toothed.baleen)]
 
