@@ -1,11 +1,9 @@
 ---
-title: "This is a mockup certificate"
-author: "M. Siple"
+title: "Certificate of approval"
 date: "6/28/2020"
 output: 
   html_document:
     self_contained: yes
-    css: corp-styles.css
     highlight: pygments
 params:
   frequency: NA
@@ -15,9 +13,18 @@ params:
   name: NA
   devicename: NA
   characteristics: NA
+  isopleth.table: NA
+  species.to.deter: NA
 ---
 
-<img src="NOAA_logo.svg" style="float:right;top:0px;right:0px;" height=100 />
+<!-- <img src="NOAA_logo.svg" style="position:absolute;top:0px;right:0px;" size= /> -->
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri(here::here("NOAA_logo.svg")),
+               alt = 'logo',
+               style = 'position:absolute; top:0; right:0; padding:10px; width: 100px')
+```
+
 
 <div class="watermark" align="center">CERTIFICATE</div>
 
@@ -34,24 +41,26 @@ min_silent = params$min_silent
 name = params$name
 devicename = params$devicename
 characteristics = params$characteristics
-
+expiration = Sys.Date() + 365
+isopleth.table = params$isopleth.table
+species.to.deter = params$species.to.deter
 ```
 
-## Certificate of approval
 
-INSERT NAME is approved to use the deterrent noted below according to the following specifications until [insert date one year from date of calculating/printing]. This deterrent is included under the National Guidelines for Non-lethally Deterring Marine Mammals.  INSERT NAME is not subject to the Marine Mammal Protection Act take prohibitions if the following deterrent is used in accordance with the below specifications.  
-
-
-
-Deterrent name: INSERT DET NAME
-
-Deterrent details: INSERT DETAILS
-
-Expiration date: EXP DATE (one year + today's date)
+`r name` is approved to use the deterrent noted below according to the following specifications until `r expiration`. This deterrent is included under the National Guidelines for Non-lethally Deterring Marine Mammals. `r name` is not subject to the Marine Mammal Protection Act take prohibitions if the following deterrent is used in accordance with the below specifications.  
 
 
 
-Specifications entered:
+Deterrent name: `r devicename`
+
+Deterrent details: `r characteristics`
+
+Expiration date: `r expiration`
+
+Species intended to be deterred by the device: `r species.to.deter`
+
+
+## Specifications entered:
 ```{r echo = FALSE}
 
   
@@ -62,5 +71,13 @@ x <- data.frame(Specification = c("Deterrent frequency (kHz)",
                 Value = c(30,170,2,4))
 x %>%
   kable(escape=FALSE) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+## Compliance
+```{r echo = FALSE}
+y <- params$isopleth.table
+y  %>%
+  kable(escape=FALSE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
