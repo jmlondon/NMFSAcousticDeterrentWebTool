@@ -6,7 +6,8 @@ output:
     self_contained: yes
     highlight: pygments
 params:
-  frequency: NA
+  lowest_frequency: NA
+  highest_frequency: NA
   max_loudness: NA
   max_ping_dur: NA
   min_silent: NA
@@ -45,7 +46,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(kableExtra)
 
-frequency = params$frequency
+lowest_frequency = params$lowest_frequency
+highest_frequency = params$highest_frequency
 max_loudness = params$max_loudness # also called "source level"
 max_ping_dur = params$max_ping_dur
 min_silent = params$min_silent
@@ -75,20 +77,20 @@ Species intended to be deterred by the device: `r species.to.deter`
 ## Specifications entered:
 ```{r echo = FALSE}
 
-if(!is.na(duty_cycle)){
-  x <- data.frame(Specification = c("Deterrent frequency (kHz)",
+  if(!is.na(duty_cycle)){
+  x <- data.frame(Specification = c("Lowest deterrent frequency (kHz)",
+                                  "Highest deterrent frequency (kHz)",
                                   "Source level (RMS SPL)",
                                   "Duty cycle (%)"),
-                Value = c(frequency,max_loudness,duty_cycle))
+                Value = c(lowest_frequency,highest_frequency,max_loudness,duty_cycle))
 }else{
-  
-x <- data.frame(Specification = c("Deterrent frequency (kHz)",
+x <- data.frame(Specification = c("Lowest deterrent frequency (kHz)",
+                                  "Highest deterrent frequency (kHz)",
                                   "Source level (RMS SPL)",
                                   "Ping/pulse duration (seconds)",
                                   "Silent period between pings/pulses (seconds)"),
-                Value = c(frequency,max_loudness,max_ping_dur,min_silent))
+                Value = c(lowest_frequency,highest_frequency,max_loudness,max_ping_dur,min_silent))
 }
-
 x %>%
   kable(escape=FALSE) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))

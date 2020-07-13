@@ -7,33 +7,23 @@ library(kableExtra)
 library(formattable)
 library(shinyBS) # for tooltips
 library(shinythemes) # for theme
-#library(bootstraplib) # for custom NOAA colors theme
 library(shinyWidgets)
 
-# Still need to add
-# det.name (for report)
-# det.char (for report)
-# contact (for report)
 
-
-publishing = F
+publishing = TRUE
 
 
 if(publishing){
   source(here('R','Functions.R'))
   source(here('R','Constants.R'))
-  source(here('R','Themes.R'))
 }else{
   source(here('acousticdeterrents','R','Functions.R'))
   source(here('acousticdeterrents','R','Constants.R'))
-  source(here('acousticdeterrents','R','Themes.R'))
 }
 
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
-  #theme = "noaatheme_mcs.css",
-  
+ui <- fluidPage(title = "NMFS Acoustic Deterrent Web Tool",
   titlePanel(div(column(width = 12,
                         tags$img(src = "NOAA_logo.svg",width="60",height="60",align="right")))),
   br(),
@@ -50,7 +40,6 @@ ui <- fluidPage(
                       br(),
                       h3("Which tab should I use?"),
                       p("For devices with a single frequency (pitch, kHz), such as some standard pingers and underwater speakers, please use the 'Single frequency' tab:"),
-                      # actionButton("single_tab", "I have a single-frequency device"),
                       actionBttn(
                         inputId = "single_tab",
                         label = "I have a single-frequency device",
@@ -63,7 +52,6 @@ ui <- fluidPage(
                       br(),
                       br(),
                       p("For a device with a range of frequencies, such as startle devices and transducers, please use the 'Multiple frequencies' tab:"),
-                      # actionButton("multi_tab", "I have a multiple-frequency device"),
                       actionBttn(
                         inputId = "multi_tab",
                         label = "I have a multiple-frequency device",
@@ -131,10 +119,72 @@ ui <- fluidPage(
                         
                         # Show a plot of the generated distribution
                         mainPanel(
+                          h3("Is your device in compliance?"),
                           tableOutput("single.freq"),
-                          HTML(criteria.note)
-                        )
-                      )),
+                          HTML(criteria.note),
+                          br(),
+                          ########## Certificate 
+                          h3("Create a certificate for your device"),
+                          h4("Enter device information"),
+                          fluidRow(
+                            column( width = 6,
+                                    textInput("name",
+                                              "Name:", value = "Enter your name"),
+                                    textInput("devicename",
+                                              "Deterrent name:", value = "Enter the name of your deterrent")
+                            ), # end of col 1
+                            column(width = 6,
+                                   textAreaInput("characteristics","Deterrent characteristics, including assumptions:") )
+                          ),
+                          
+                          h4("What species are you trying to deter?"),
+                          fluidRow(
+                            column(width = 4,
+                                   checkboxGroupInput("seals.sealionslist",
+                                                      label = "Seals and sea lions",
+                                                      choices = as.list(seals.sealions)),
+                                   checkboxInput(inputId = "otherseals",label = "Other seals"),
+                                   conditionalPanel(condition = "input.otherseals",
+                                                    textInput(inputId = 'seals_other',
+                                                              label = "Please enter which seal species you want to deter")),
+                                   checkboxInput(inputId = "othersealions",label = "Other sea lions"),
+                                   conditionalPanel(condition = "input.othersealions",
+                                                    textInput(inputId = 'sealions_other',
+                                                              label = "Please enter which sea lion species you want to deter"))
+                            ),
+                            column(width = 4,
+                                   checkboxGroupInput("dolphins.porpoiseslist",
+                                                      label = "Dolphins and porpoises",
+                                                      choices = as.list(dolphins.porpoises))
+                            ),
+                            column(width = 4,
+                                   checkboxGroupInput("toothed.baleenlist",
+                                                      label = "Toothed and baleen whales",
+                                                      choices = as.list(toothed.baleen)),
+                                   checkboxInput(inputId = "othertoothed",label = "Other toothed whales"),
+                                   conditionalPanel(condition = "input.othertoothed",
+                                                    textInput(inputId = 'toothed_other',label = "Please enter which toothed whale species you want to deter")),
+                                   checkboxInput(inputId = "otherbaleen",label = "Other baleen whales"),
+                                   conditionalPanel(condition = "input.otherbaleen",
+                                                    textInput(inputId = 'baleen_other',label = "Please enter which baleen whale species you want to deter")),
+                            ),
+                            column(width = 12, 
+                                   textOutput("deterlist"),
+                                   br(),
+                                   downloadBttn(outputId = "cert",label = "Generate certificate",
+                                                color = "success",
+                                                style = "pill",
+                                                size="md",
+                                                block = TRUE),
+                                   br(),
+                                   br()
+                            )
+                          ) # end fluidRow
+                          
+                        ) # end mainpanel
+                        
+                      ) # end sidebarpanel layout
+             ), # end single frequency tab
              tabPanel("Multiple frequencies",
                       sidebarLayout(
                         sidebarPanel(
@@ -172,61 +222,76 @@ ui <- fluidPage(
                         
                         # Show a plot of the generated distribution
                         mainPanel(
+                          h3("Is your device in compliance?"),
                           tableOutput("multiple.freq"),
-                          HTML(criteria.note)
-                        )
-                      )
+                          HTML(criteria.note),
+                          br(),
+                          ########## Certificate 
+                          h3("Create a certificate for your device"),
+                          h4("Enter device information"),
+                          fluidRow(
+                            column( width = 6,
+                                    textInput("name2",
+                                              "Name:", value = "Enter your name"),
+                                    textInput("devicename2",
+                                              "Deterrent name:", value = "Enter the name of your deterrent")
+                            ), # end of col 1
+                            column(width = 6,
+                                   textAreaInput("characteristics2","Deterrent characteristics, including assumptions:") )
+                          ),
+                          
+                          h4("What species are you trying to deter?"),
+                          fluidRow(
+                            column(width = 4,
+                                   checkboxGroupInput("seals.sealionslist2",
+                                                      label = "Seals and sea lions",
+                                                      choices = as.list(seals.sealions)),
+                                   checkboxInput(inputId = "otherseals2",
+                                                 label = "Other seals"),
+                                   conditionalPanel(condition = "input.otherseals2",
+                                                    textInput(inputId = 'seals_other2',
+                                                              label = "Please enter which seal species you want to deter")),
+                                   checkboxInput(inputId = "othersealions2",label = "Other sea lions"),
+                                   conditionalPanel(condition = "input.othersealions2",
+                                                    textInput(inputId = 'sealions_other2',
+                                                              label = "Please enter which sea lion species you want to deter"))
+                            ),
+                            column(width = 4,
+                                   checkboxGroupInput("dolphins.porpoiseslist2",
+                                                      label = "Dolphins and porpoises",
+                                                      choices = as.list(dolphins.porpoises))
+                            ),
+                            column(width = 4,
+                                   checkboxGroupInput("toothed.baleenlist2",
+                                                      label = "Toothed and baleen whales",
+                                                      choices = as.list(toothed.baleen)),
+                                   checkboxInput(inputId = "othertoothed2",
+                                                 label = "Other toothed whales"),
+                                   conditionalPanel(condition = "input.othertoothed2",
+                                                    textInput(inputId = 'toothed_other2',
+                                                              label = "Please enter which toothed whale species you want to deter")),
+                                   checkboxInput(inputId = "otherbaleen2",label = "Other baleen whales"),
+                                   conditionalPanel(condition = "input.otherbaleen2",
+                                                    textInput(inputId = 'baleen_other2',
+                                                              label = "Please enter which baleen whale species you want to deter")),
+                            ),
+                            column(width = 12, 
+                                   textOutput("deterlist2"),
+                                   br(),
+                                   downloadBttn(outputId = "cert2",label = "Generate certificate",
+                                                color = "success",
+                                                style = "pill",
+                                                size="md",
+                                                block = TRUE),
+                                   br(),
+                                   br()
+                            )
+                          ) # end fluidRow
+                          
+                        ) # end mainpanel
+                      ) # end sidebarlayout format
              ) 
-             ,
-             tabPanel("Create a certificate",
-                      sidebarPanel(
-                        h3("Create a certificate for your device"),
-                        textInput("name",
-                                  "Name:", value = "Enter your name"),
-                        textInput("devicename",
-                                  "Deterrent name:", value = "Enter the name of your deterrent"),
-                        textAreaInput("characteristics","Deterrent characteristics, including assumptions:"),
-                        textAreaInput("species","Which species are you trying to deter?"),
-                        radioButtons("whichfreq","Type of frequency",choices = c("Single","Multiple")),
-                        downloadButton(outputId = "cert", "Generate certificate")),
-                      mainPanel(
-                        h3("What species are you trying to deter?"),
-                        fluidRow(
-                          column(width = 4,
-                                 checkboxGroupInput("seals.sealionslist",
-                                                    label = "Seals and sea lions",
-                                                    choices = as.list(seals.sealions)),
-                                 checkboxInput(inputId = "otherseals",label = "Other seals"),
-                                 conditionalPanel(condition = "input.otherseals",
-                                                  textInput(inputId = 'seals_other',
-                                                            label = "Please enter which seal species you want to deter")),
-                                 checkboxInput(inputId = "othersealions",label = "Other sea lions"),
-                                 conditionalPanel(condition = "input.othersealions",
-                                                  textInput(inputId = 'sealions_other',
-                                                            label = "Please enter which sea lion species you want to deter"))
-                          ),
-                          column(width = 4,
-                                 checkboxGroupInput("dolphins.porpoiseslist",
-                                                    label = "Dolphins and porpoises",
-                                                    choices = as.list(dolphins.porpoises))
-                          ),
-                          column(width = 4,
-                                 checkboxGroupInput("toothed.baleenlist",
-                                                    label = "Toothed and baleen whales",
-                                                    choices = as.list(toothed.baleen)),
-                                 checkboxInput(inputId = "othertoothed",label = "Other toothed whales"),
-                                 conditionalPanel(condition = "input.othertoothed",
-                                                  textInput(inputId = 'toothed_other',label = "Please enter which toothed whale species you want to deter")),
-                                 checkboxInput(inputId = "otherbaleen",label = "Other baleen whales"),
-                                 conditionalPanel(condition = "input.otherbaleen",
-                                                  textInput(inputId = 'baleen_other',label = "Please enter which baleen whale species you want to deter")),
-                          ),
-                          column(width = 12, textOutput("deterlist"))
-                        ),
-                        
-                      )
-                      
-             ) # end of certificate panel
+
   ) # end navbarpage
 ) # end ui
 
@@ -333,31 +398,75 @@ server <- function(input, output, session) {
     
   )
   
+  isopleth.table.out2 <- reactive({
+    by.hearing <- data.frame(hearing.group = hearing.group,
+                             x = c(1.7,28,42,6.2,4.9)) %>% 
+      mutate(freq.by.group = ifelse(x>=input$frequency_lowest & x <=input$frequency_highest,x,
+                                    ifelse(x>input$frequency_lowest & x>input$frequency_highest,input$frequency_highest,
+                                           input$frequency_lowest)))
+    
+    mm <- m %>%
+      full_join(by.hearing)
+    
+    result.table.m <- mm %>%
+      mutate(isopleth = get.isopleth(max.loudness = input$max_loudness_m,
+                                     adjustment = get.adjustment(freq = freq.by.group,
+                                                                 wtpars = list(a=a,b=b,f1=f1,f2=f2,C=C)),
+                                     log10dur = log10dur_m(),
+                                     selcumthresh = SELcum,
+                                     propagation = propagation))
+    
+    user.table.m <- result.table.m %>% 
+      select(hearing.group,isopleth) %>%
+      mutate(isopleth = round(isopleth,digits=1)) %>%
+      rename(`Distance (meters)` = isopleth) %>%
+      rename(`Hearing group` = hearing.group) %>%
+      mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
+      mutate('Meets criteria' = ifelse(`Distance (meters)`>100,"&#10006 <b> NO </b>","&#10004 Yes"))
+    
+      user.table.m
+  }
+  )
+  
   dlist <- reactive({
     spps <- paste(c(input$seals.sealionslist,
-                            input$dolphins.porpoiseslist,
-                            input$toothed.baleenlist
-                            ),
-                          collapse = ", ")
+                    input$dolphins.porpoiseslist,
+                    input$toothed.baleenlist),
+                  collapse = ", ")
     
     baleen <- ifelse(input$otherbaleen,input$baleen_other,NA)
     toothed <- ifelse(input$othertoothed,input$toothed_other,NA)
     seal <- ifelse(input$otherseals,input$seals_other,NA)
     sealion <- ifelse(input$othersealions,input$sealions_other,NA)
     x <- c(seal,sealion,baleen,toothed)
-    print("x")
-    print(x)
-    #print(spps)
-    
     otherspps <- paste(x[complete.cases(x)],collapse=", ")
     
+    paste(spps,otherspps,sep=', ')
+  })
+  
+  dlist2 <- reactive({ # for multispecies tab
+    spps <- paste(c(input$seals.sealionslist2,
+                    input$dolphins.porpoiseslist2,
+                    input$toothed.baleenlist2),
+                  collapse = ", ")
     
-    ls <- paste(spps,otherspps,sep=', ')
-    ls
-    })
+    baleen <- ifelse(input$otherbaleen2,input$baleen_other2,NA)
+    toothed <- ifelse(input$othertoothed2,input$toothed_other2,NA)
+    seal <- ifelse(input$otherseals2,input$seals_other2,NA)
+    sealion <- ifelse(input$othersealions2,input$sealions_other2,NA)
+    x <- c(seal,sealion,baleen,toothed)
+    otherspps <- paste(x[complete.cases(x)],collapse=", ")
+    
+    paste(spps,otherspps,sep=', ')
+  })
+  
   
   output$deterlist <- renderText({
     paste("Species chosen:",dlist())
+  })
+  
+  output$deterlist2 <- renderText({
+    paste("Species chosen:",dlist2())
   })
   
   output$cert <- downloadHandler(
@@ -369,11 +478,11 @@ server <- function(input, output, session) {
       tempReport <- file.path(tempdir(), "certificate.Rmd")
       file.copy("certificate.Rmd", tempReport, overwrite = TRUE)
       
-      #if(input$whichfreq == "Single"){
       params <- list(frequency = input$frequency,
                      max_loudness = input$max_loudness, # also called "source level"
                      max_ping_dur = input$max_ping_dur,
                      min_silent = input$min_silent,
+                     duty_cycle_direct = ifelse(input$duty_cycle_decide=="direct",input$duty_cycle_manual,NA),
                      name = input$name,
                      devicename = input$devicename,
                      characteristics = input$characteristics,
@@ -387,6 +496,33 @@ server <- function(input, output, session) {
       )
     }
   )
+  
+  output$cert2 <- downloadHandler(
+    filename = "certificate_multi.html",
+    content = function(file) {
+      tempReport <- file.path(tempdir(), "certificate_multi.Rmd")
+      file.copy("certificate_multi.Rmd", tempReport, overwrite = TRUE)
+
+      params <- list(lowest_frequency = input$frequency_lowest,
+                     highest_frequency = input$frequency_highest,
+                     max_loudness = input$max_loudness_m, # also called "source level"
+                     max_ping_dur = input$max_ping_dur_m,
+                     min_silent = input$min_silent_m,
+                     duty_cycle_direct = ifelse(input$duty_cycle_decide_m=="direct",input$duty_cycle_manual_m,NA),
+                     name = input$name2,
+                     devicename = input$devicename2,
+                     characteristics = input$characteristics2,
+                     isopleth.table = isopleth.table.out2(),
+                     species.to.deter = dlist2()
+      )
+      
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params,
+                        envir = new.env(parent = globalenv())
+      )
+    }
+  )
+  
 }
 
 # Run the application 
