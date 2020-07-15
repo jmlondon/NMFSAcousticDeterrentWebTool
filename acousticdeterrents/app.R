@@ -63,16 +63,16 @@ ui <- fluidPage(title = "NMFS Acoustic Deterrent Web Tool",
                       ),
                       br(),
                       br(),
-                      p("If you have a device that is impulsive (i.e., capable of producing high sound levels in a short duration, broadband [multiple frequencies]), please consult the NMFS guidelines for safely deterring marine mammals.Examples of impulsive acoustic deterrents include power pulsed devices, low frequency broadband devices, and explosives. "),
+                      p("If you have a device that is impulsive (i.e., capable of producing high sound levels in a short duration, broadband [multiple frequencies]), please consult the NMFS guidelines for safely deterring marine mammals. Examples of impulsive acoustic deterrents include power pulsed devices, low frequency broadband devices, and explosives."),
                       br(),
                       
                       h3("Once you determine which calculator to use"),
                       tags$ol(
-                        tags$li(" Complete fields with the device's specifications"),
+                        tags$li("Complete fields with the device's specifications"),
                         tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:green", "green"), sep = "")), "if approved for use under NMFS's National Guidelines for Deterring Marine Mammals and a certificate will be provided."),
                         tags$li("The cells will contain the distance (meters) to onset of permanent hearing loss by each marine mammal hearing group."),
                         tags$li("You are required to deploy the device at least as far away as noted in the cell."),
-                        tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:red", "red"), sep = ""))," if the device does not meet NMFS's evaluation criteria; this device MAY NOT BE USED to deter marine mammals and a certificate will not be issued.")
+                        tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:red", "red"), sep = ""))," if the device does not meet NMFS's evaluation criteria.")
                       ),
                       br(),
                       
@@ -336,20 +336,19 @@ server <- function(input, output, session) {
       select(hearing.group,isopleth)
     
     user.table.s %>%
-      rename(`Distance (meters)` = isopleth) %>%
       rename(`Hearing group` = hearing.group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-      mutate('Meets criteria' = ifelse(`Distance (meters)`>100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
-      mutate(`Distance (meters)` = round(`Distance (meters)`,digits=1)) %>%
-      mutate(`Distance (meters)` = ifelse(`Distance (meters)`>100,
-                                          cell_spec(`Distance (meters)`,background="red",color="white",bold=T),
-                                          cell_spec(`Distance (meters)`, background="green",color="white",bold=T))) %>%
+      mutate('Meets criteria' = ifelse(isopleth>100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
+      mutate(isopleth = round(isopleth,digits = 1)) %>%
+      mutate(isopleth = ifelse(isopleth>100,
+                                          cell_spec(isopleth,background="red",color="white",bold=T),
+                                          cell_spec(isopleth, background="green",color="white",bold=T))) %>%
+      rename(`Minimum Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = isopleth) %>%
       kable(escape=FALSE) %>% 
       kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
   }
   
   output$multiple.freq <- function(){
-    
     by.hearing <- data.frame(hearing.group = hearing.group,
                              x = c(1.7,28,42,6.2,4.9)) %>% 
       mutate(freq.by.group = ifelse(x>=input$frequency_lowest & x <=input$frequency_highest,x,
@@ -370,13 +369,13 @@ server <- function(input, output, session) {
     user.table.m <- result.table.m %>% 
       select(hearing.group,isopleth) %>%
       mutate(isopleth = round(isopleth,digits=1)) %>%
-      rename(`Distance (meters)` = isopleth) %>%
       rename(`Hearing group` = hearing.group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-      mutate('Meets criteria' = ifelse(`Distance (meters)`>100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
-      mutate(`Distance (meters)` = ifelse(`Distance (meters)`>100,
-                                          cell_spec(`Distance (meters)`,background="red",color="white",bold=T),
-                                          cell_spec(`Distance (meters)`, background="green",color="white",bold=T))) %>%
+      mutate('Meets criteria' = ifelse(isopleth>100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
+      mutate(`Distance (meters)` = ifelse(isopleth>100,
+                                          cell_spec(isopleth,background="red",color="white",bold=T),
+                                          cell_spec(isopleth, background="green",color="white",bold=T))) %>%
+      rename(`Minimum Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = isopleth) %>%
       kable(escape=FALSE) %>% 
       kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
   }

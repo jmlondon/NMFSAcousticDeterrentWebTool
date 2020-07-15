@@ -1,6 +1,6 @@
 ---
-title: "Certificate of approval"
-date: "6/28/2020"
+title: "NMFS Acoustic Deterrents Web Tool"
+subtitle: "Certificate of approval"
 output: 
   html_document:
     self_contained: yes
@@ -61,7 +61,7 @@ species.to.deter = params$species.to.deter
 ```
 
 
-`r name` is approved to use the deterrent noted below according to the following specifications until `r expiration`. This deterrent is included under the National Guidelines for Non-lethally Deterring Marine Mammals. `r name` is not subject to the Marine Mammal Protection Act take prohibitions if the following deterrent is used in accordance with the below specifications.  
+`r name` is approved to use the deterrent noted below according to the following specifications until `r expiration`.
 
 
 
@@ -77,7 +77,7 @@ Species intended to be deterred by the device: `r species.to.deter`
 ## Specifications entered:
 ```{r echo = FALSE}
 
-  if(!is.na(duty_cycle)){
+if(!is.na(duty_cycle)){
   x <- data.frame(Specification = c("Lowest deterrent frequency (kHz)",
                                   "Highest deterrent frequency (kHz)",
                                   "Source level (RMS SPL)",

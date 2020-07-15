@@ -36,16 +36,16 @@ frequency.note <- "Note: 1000 Hz = 1 kHz (e.g., 400 Hz = 0.4 kHz)"
 loudness.note <- "Note: If the device is non-programmable and capable of producing multiple source levels, the loudness must be inputed"
 duration.note <- "Note: 1000 milliseconds = 1 second (e.g., 100 milleseconds = 0.1 second)"
 duty.cycle.note <- "The duty cycle is the on/off cycle time or proportion of time that the signal is active"
-criteria.note <- "<b>Evaluation criteria:</b> Acoustic deterrents must not result in the onset of a permanent threshold shift (PTS) > 100 m from the source with an hour exposure duration. Thus, when the distance column is > 100 m, the deterrent device is not approved for that marine mammal group."
+criteria.note <- "<b>Evaluation criteria:</b> Whether acoustic deterrents would result in a permanent threshold shift (PTS) &ge;100 m from the source with an hour exposure duration. Thus, when the distance column is <100 m for all marine mammal hearing groups, the deterrent would be approved."
 
 # Long text for intro etc -------------------------------------------------
- intro.text <- "Welcome to the acoustic deterrents web tool! You can use this tool to determine whether your device is allowed under NMFS’s National Guidelines for Nonlethally Deterring Marine Mammals. This tool is for  non-impulsive devices (e.g., acoustic alarms, pingers, transducers, predator sounds/alarm vocalizations using an underwater speaker) with an underwater source level ≥ 170 dB (RMS, root-mean-square sound pressure level). Simply enter the device specifications in the appropriate calculator.  If you cannot determine the specifications of the device, contact the manufacturer.  You must enter all required information in the calculator to determine whether your device is approved for deterring marine mammals.  If the device, as you intend to use it, meets NMFS’s evaluation criteria, you will receive a certificate of approval. You will need to print or save a copy of this certificate and furnish upon request. The device must be used according to the specifications listed on the certificate. Certificates are valid for one year from date of issue."     
+ intro.text <- "Welcome to the acoustic deterrents web tool! You can use this tool to determine whether your device is allowed under NMFS’s National Guidelines for Nonlethally Deterring Marine Mammals. This tool is for  non-impulsive devices (e.g., acoustic alarms, pingers, transducers, predator sounds/alarm vocalizations using an underwater speaker) with an underwater source level &ge; 170 dB (RMS, root-mean-square sound pressure level). Simply enter the device specifications in the appropriate calculator.  If you cannot determine the specifications of the device, contact the manufacturer.  You must enter all required information in the calculator to determine whether your device is approved for deterring marine mammals.  If the device, as you intend to use it, meets NMFS’s evaluation criteria, you will receive a certificate of approval. You will need to print or save a copy of this certificate and furnish upon request. The device must be used according to the specifications listed on the certificate. Certificates are valid for one year from date of issue."     
 
 
 # Species list ------------------------------------------------------------
 x <-data.frame(
     stringsAsFactors = FALSE,
-          seals.sealions = c("Steller (northern) sea lion","California sea lion",
+          seals.sealions = c("Steller sea lion","California sea lion",
                              "Northern (Pribilof) fur seal","Harbor seal","Spotted seal",
                              "Ringed seal","Ribbon seal","Gray seal",
                              "Hawaiian monk seal","Northern elephant seal","Bearded seal",

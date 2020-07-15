@@ -1,6 +1,6 @@
 ---
-title: "Certificate of approval"
-date: "6/28/2020"
+title: "NMFS Acoustic Deterrents Web Tool"
+subtitle: "Certificate of approval"
 output: 
   html_document:
     self_contained: yes
@@ -36,7 +36,6 @@ htmltools::img(src = knitr::image_uri(here::here("NOAA_logo.svg")),
                style = 'position:absolute; top:0; right:0; padding:10px; width: 100px')
 ```
 
-
 <div class="watermark" align="center">CERTIFICATE</div>
 
 ```{r setup, include=FALSE}
@@ -59,7 +58,7 @@ species.to.deter = params$species.to.deter
 ```
 
 
-`r name` is approved to use the deterrent noted below according to the following specifications until `r expiration`. This deterrent is included under the National Guidelines for Non-lethally Deterring Marine Mammals. `r name` is not subject to the Marine Mammal Protection Act take prohibitions if the following deterrent is used in accordance with the below specifications.  
+`r name` is approved to use the deterrent noted below according to the following specifications until `r expiration`. 
 
 
 
@@ -81,8 +80,7 @@ if(!is.na(duty_cycle)){
                                   "Duty cycle (%)"),
                 Value = c(frequency,max_loudness,duty_cycle))
 }else{
-  
-x <- data.frame(Specification = c("Deterrent frequency (kHz)",
+  x <- data.frame(Specification = c("Deterrent frequency (kHz)",
                                   "Source level (RMS SPL)",
                                   "Ping/pulse duration (seconds)",
                                   "Silent period between pings/pulses (seconds)"),
@@ -90,7 +88,7 @@ x <- data.frame(Specification = c("Deterrent frequency (kHz)",
 }
 
 x %>%
-  kable(escape=FALSE) %>% 
+  kable(escape=FALSE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
