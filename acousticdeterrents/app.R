@@ -10,7 +10,7 @@ library(shinythemes) # for theme
 library(shinyWidgets)
 
 
-publishing = TRUE
+publishing = F
 
 
 if(publishing){
@@ -290,7 +290,24 @@ ui <- fluidPage(title = "NMFS Acoustic Deterrent Web Tool",
                           
                         ) # end mainpanel
                       ) # end sidebarlayout format
-             ) 
+             ), #end tab
+             tabPanel("Help",
+                      h3("Where are the specs for my device located?"),
+                      p("Here are several examples of device specifications showing where to find the information you need to enter in this web tool."),
+                      br(),
+                      h4("Example #1"),
+                      tags$img(src = 'images/Slide1.png',width = 800),
+                      br(),
+                      h4("Example #2"),
+                      tags$img(src = 'images/Slide2.png',width = 800),
+                      br(),
+                      h4("Example #3"),
+                      tags$img(src = 'images/Slide3.png',width = 800),
+                      br(),
+                      h4("Example #4"),
+                      tags$img(src = 'images/Slide4.png',width = 800),
+                      br(),
+                      )
 
   ) # end navbarpage
 ) # end ui
