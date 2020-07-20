@@ -8,6 +8,7 @@ library(formattable)
 library(shinyBS) # for tooltips
 library(shinythemes) # for theme
 library(shinyWidgets)
+library(shinyalert)
 
 
 publishing = F
@@ -23,9 +24,10 @@ if(publishing){
 
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(title = "NMFS Acoustic Deterrent Web Tool",
-  titlePanel(div(column(width = 12,
-                        tags$img(src = "NOAA_logo.svg",width="60",height="60",align="right")))),
+ui <- fluidPage(useShinyalert(),
+                title = "NMFS Acoustic Deterrent Web Tool",
+                titlePanel(div(column(width = 12,
+                           tags$img(src = "NOAA_logo.svg",width="60",height="60",align="right")))),
   br(),
   br(),
   titlePanel("National Marine Fisheries Service (NMFS) Acoustic Deterrent Web Tool"), 
@@ -171,7 +173,17 @@ ui <- fluidPage(title = "NMFS Acoustic Deterrent Web Tool",
                             column(width = 12, 
                                    textOutput("deterlist"),
                                    br(),
-                                   downloadBttn(outputId = "cert",label = "Generate certificate",
+                                   # actionBttn(inputId = "cert_yn",
+                                   #            label = "Generate a certificate",
+                                   #            color = "success",
+                                   #            style = "pill",
+                                   #            size="md",
+                                   #            block = TRUE),
+                                   # conditionalPanel(condition = "input.certyn && all(isopleth.table.out()$`Distance (meters)`>100)",
+                                   # materialSwitch(inputId = "id",
+                                   #                label = "Primary switch",
+                                   #                status = "success"),
+                                   downloadBttn(outputId = "cert",label = "Download certificate",
                                                 color = "success",
                                                 style = "pill",
                                                 size="md",
@@ -297,6 +309,7 @@ ui <- fluidPage(title = "NMFS Acoustic Deterrent Web Tool",
                       br(),
                       h4("Example #1"),
                       tags$img(src = 'images/Slide1.png',width = 800),
+                      #tags$div(HTML("<img src='images/Slide1.png' width='400' alt='hello>)")),
                       br(),
                       h4("Example #2"),
                       tags$img(src = 'images/Slide2.png',width = 800),
@@ -306,7 +319,7 @@ ui <- fluidPage(title = "NMFS Acoustic Deterrent Web Tool",
                       br(),
                       h4("Example #4"),
                       tags$img(src = 'images/Slide4.png',width = 800),
-                      br(),
+                      br()
                       )
 
   ) # end navbarpage
@@ -347,6 +360,7 @@ server <- function(input, output, session) {
                                      log10dur = log10dur(),
                                      selcumthresh = SELcum,
                                      propagation = propagation))
+    
     
     # in shiny, add conditional formatting to the table
     user.table.s <- result.table.s %>%
@@ -397,7 +411,7 @@ server <- function(input, output, session) {
       kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
   }
   
-  isopleth.table.out <- reactive(
+  isopleth.table.out <- reactive( #single freq
     m %>%
       mutate(isopleth = get.isopleth(max.loudness = input$max_loudness,
                                      adjustment = get.adjustment(freq = input$frequency,
@@ -414,7 +428,7 @@ server <- function(input, output, session) {
     
   )
   
-  isopleth.table.out2 <- reactive({
+  isopleth.table.out2 <- reactive({ #multiple freq
     by.hearing <- data.frame(hearing.group = hearing.group,
                              x = c(1.7,28,42,6.2,4.9)) %>% 
       mutate(freq.by.group = ifelse(x>=input$frequency_lowest & x <=input$frequency_highest,x,
@@ -458,6 +472,7 @@ server <- function(input, output, session) {
     otherspps <- paste(x[complete.cases(x)],collapse=", ")
     
     paste(spps,otherspps,sep=', ')
+    print(any(isopleth.table.out()$`Distance (meters)`>=100))
   })
   
   dlist2 <- reactive({ # for multispecies tab
@@ -484,6 +499,29 @@ server <- function(input, output, session) {
   output$deterlist2 <- renderText({
     paste("Species chosen:",dlist2())
   })
+  
+  
+  # observe({
+  #   if (input$start_proc > 0) {
+  #     Sys.sleep(1)
+  #     # enable the download button
+  #     shinyjs::enable("data_file")
+  #     # change the html of the download button
+  #     shinyjs::html("data_file",
+  #                   sprintf("<i class='fa fa-download'></i>
+  #                             Download (file size: %s)",
+  #                           round(runif(1, 1, 10000))
+  #                   )
+  #     )
+  #   }
+  # })
+  # shinyjs::disable(id = "cert_yn")
+  # 
+  # warning_single <- reactive(any(isopleth.table.out()$`Distance (meters)`>100))
+  # observeEvent( warning_single(),
+  #               {shinyalert("Oops!", "Something went wrong.", type = "error")
+  #              })
+  # 
   
   output$cert <- downloadHandler(
     filename = "certificate.html",
