@@ -8,10 +8,9 @@ library(formattable)
 library(shinyBS) # for tooltips
 library(shinythemes) # for theme
 library(shinyWidgets)
-library(shinyalert)
 
 
-publishing = F
+publishing = TRUE
 
 
 if(publishing){
@@ -24,7 +23,7 @@ if(publishing){
 
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(useShinyalert(),
+ui <- fluidPage(
                 title = "NMFS Acoustic Deterrent Web Tool",
                 titlePanel(div(column(width = 12,
                            tags$img(src = "NOAA_logo.svg",width="60",height="60",align="right")))),
@@ -38,7 +37,7 @@ ui <- fluidPage(useShinyalert(),
              id="inTabset",
              tabPanel("Introduction",
                       h2("Introduction"),
-                      p(intro.text),
+                      HTML(intro.text),
                       br(),
                       h3("Which tab should I use?"),
                       p("For devices with a single frequency (pitch, kHz), such as some standard pingers and underwater speakers, please use the 'Single frequency' tab:"),
@@ -173,21 +172,16 @@ ui <- fluidPage(useShinyalert(),
                             column(width = 12, 
                                    textOutput("deterlist"),
                                    br(),
-                                   # actionBttn(inputId = "cert_yn",
-                                   #            label = "Generate a certificate",
-                                   #            color = "success",
-                                   #            style = "pill",
-                                   #            size="md",
-                                   #            block = TRUE),
-                                   # conditionalPanel(condition = "input.certyn && all(isopleth.table.out()$`Distance (meters)`>100)",
-                                   # materialSwitch(inputId = "id",
-                                   #                label = "Primary switch",
-                                   #                status = "success"),
-                                   downloadBttn(outputId = "cert",label = "Download certificate",
+                                   textOutput(outputId = 'warningmessage'),
+                                   # p("If you do not see a 'Download certificate' button below, your device is not compliant with NMFS guidelines."),
+                                   conditionalPanel(
+                                     condition = "output.panelStatus",
+                                      downloadBttn(outputId = "cert",label = "Download certificate",
                                                 color = "success",
                                                 style = "pill",
                                                 size="md",
-                                                block = TRUE),
+                                                block = TRUE)
+                                   ),
                                    br(),
                                    br()
                             )
@@ -290,11 +284,17 @@ ui <- fluidPage(useShinyalert(),
                             column(width = 12, 
                                    textOutput("deterlist2"),
                                    br(),
-                                   downloadBttn(outputId = "cert2",label = "Generate certificate",
-                                                color = "success",
-                                                style = "pill",
-                                                size="md",
-                                                block = TRUE),
+                                   textOutput(outputId = 'warningmessage2'),
+                                   # p("If you do not see a 'Download certificate' button below, your device is not compliant with NMFS guidelines."),
+                                   conditionalPanel(
+                                     condition = "output.panelStatus2",
+                                     downloadBttn(outputId = "cert2",label = "Generate certificate",
+                                                  color = "success",
+                                                  style = "pill",
+                                                  size="md",
+                                                  block = TRUE)
+                                   ),
+                                   
                                    br(),
                                    br()
                             )
@@ -309,7 +309,6 @@ ui <- fluidPage(useShinyalert(),
                       br(),
                       h4("Example #1"),
                       tags$img(src = 'images/Slide1.png',width = 800),
-                      #tags$div(HTML("<img src='images/Slide1.png' width='400' alt='hello>)")),
                       br(),
                       h4("Example #2"),
                       tags$img(src = 'images/Slide2.png',width = 800),
@@ -425,10 +424,13 @@ server <- function(input, output, session) {
       rename(`Hearing group` = hearing.group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
       mutate('Meets criteria' = ifelse(`Distance (meters)`>100,"&#10006 <b> NO </b>","&#10004 Yes"))
-    
   )
   
+  
   isopleth.table.out2 <- reactive({ #multiple freq
+    #print(any(isopleth.table.out()$`Distance (meters)`>=100))
+    
+    
     by.hearing <- data.frame(hearing.group = hearing.group,
                              x = c(1.7,28,42,6.2,4.9)) %>% 
       mutate(freq.by.group = ifelse(x>=input$frequency_lowest & x <=input$frequency_highest,x,
@@ -455,6 +457,7 @@ server <- function(input, output, session) {
       mutate('Meets criteria' = ifelse(`Distance (meters)`>100,"&#10006 <b> NO </b>","&#10004 Yes"))
     
       user.table.m
+      #any(isopleth.table.out()$`Distance (meters)`>100)
   }
   )
   
@@ -472,7 +475,6 @@ server <- function(input, output, session) {
     otherspps <- paste(x[complete.cases(x)],collapse=", ")
     
     paste(spps,otherspps,sep=', ')
-    print(any(isopleth.table.out()$`Distance (meters)`>=100))
   })
   
   dlist2 <- reactive({ # for multispecies tab
@@ -518,10 +520,24 @@ server <- function(input, output, session) {
   # shinyjs::disable(id = "cert_yn")
   # 
   # warning_single <- reactive(any(isopleth.table.out()$`Distance (meters)`>100))
-  # observeEvent( warning_single(),
-  #               {shinyalert("Oops!", "Something went wrong.", type = "error")
-  #              })
-  # 
+  
+  output$panelStatus <- reactive({
+    all(isopleth.table.out()$`Distance (meters)`<100)
+  })
+  outputOptions(output, "panelStatus", suspendWhenHidden = FALSE)
+
+  output$panelStatus2 <- reactive({
+    all(isopleth.table.out2()$`Distance (meters)`<100)
+  })
+  outputOptions(output, "panelStatus2", suspendWhenHidden = FALSE)
+  
+  
+  output$warningmessage <- renderText(ifelse(all(isopleth.table.out()$`Distance (meters)`<100),
+                                             approve.note,
+                                             notapprove.note))
+  output$warningmessage2 <- renderText(ifelse(all(isopleth.table.out2()$`Distance (meters)`<100),
+                                             approve.note,
+                                             notapprove.note))
   
   output$cert <- downloadHandler(
     filename = "certificate.html",
