@@ -68,7 +68,7 @@ Deterrent details: `r characteristics`
 
 Expiration date: `r expiration`
 
-Species intended to be deterred by the device: `r species.to.deter`
+Marine mammal species being deterred: `r species.to.deter`
 
 
 ## Specifications entered:
@@ -92,10 +92,11 @@ x %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-## Compliance
+## NMFS evaluation criteria
 ```{r echo = FALSE}
 y <- params$isopleth.table
 y  %>%
+  select(-isopleth) %>%
   kable(escape=FALSE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```

@@ -37,6 +37,9 @@ ui <- fluidPage(
              id="inTabset",
              tabPanel("Introduction",
                       h2("Introduction"),
+                      HTML(preintro.text),
+                      br(),
+                      br(),
                       HTML(intro.text),
                       br(),
                       h3("Which tab should I use?"),
@@ -70,7 +73,7 @@ ui <- fluidPage(
                       h3("Once you determine which calculator to use"),
                       tags$ol(
                         tags$li("Complete fields with the device's specifications"),
-                        tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:green", "green"), sep = "")), "if approved for use under NMFS's National Guidelines for Deterring Marine Mammals and a certificate will be provided."),
+                        tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:green", "green"), sep = "")), "if your device meets NMFS's evaluation criteria for deterring marine mammals and a certificate will be provided."),
                         tags$li("The cells will contain the distance (meters) to onset of permanent hearing loss by each marine mammal hearing group."),
                         tags$li("You are required to deploy the device at least as far away as noted in the cell."),
                         tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:red", "red"), sep = ""))," if the device does not meet NMFS's evaluation criteria.")
@@ -78,12 +81,12 @@ ui <- fluidPage(
                       br(),
                       
                       h3("If your device is programmable"),
-                      p("Insert the specifications for how you wish to use the device.  If those specifications do not meet NMFS’ evaluation criteria, you may adjust the inputs to determine whether a different combination of specifications would be approved (e.g., using a lower source level, lower duty cycle, increasing the minimum silent interval between acoustic signals, or decreasing the maximum acoustic signal duration will reduce the output distance)."),
+                      p("Insert the specifications for how you wish to use the device.  If those specifications do not meet NMFS’ evaluation criteria, you may adjust the inputs to determine whether a different combination of specifications would meet NMFS's evaluation criteria (e.g., using a lower source level, lower duty cycle, increasing the minimum silent interval between acoustic signals, or decreasing the maximum acoustic signal duration will reduce the output distance)."),
                       br(),
                       
                       h3("NMFS Evaluation Criteria"),
                       tags$ol(
-                        tags$li("Acoustic deterrents that have the potential to result in the onset of a permanent threshold shift (PTS) at distances > 100 m from the source after an hour of exposure would not be approved."),
+                        tags$li("Acoustic deterrents that have the potential to result in the onset of a permanent threshold shift (PTS) at distances &ge;100 m from the source after an hour of exposure would not meet NMFS's evaluation criteria."),
                         tags$li("PTS onset thresholds are based on the", a("2018 revision to Technical Guidance for Assessing the Effects of Anthropogenic Sound on Marine Mammal Hearing (Version 2.0)",href=" https://www.fisheries.noaa.gov/national/marine-mammal-protection/marine-mammal-acoustic-technical-guidance")))
                       
              ),
@@ -120,9 +123,10 @@ ui <- fluidPage(
                         
                         # Show a plot of the generated distribution
                         mainPanel(
-                          h3("Is your device in compliance?"),
+                          h3("Does your device meet NMFS criteria?"),
                           tableOutput("single.freq"),
                           HTML(criteria.note),
+                          br(),
                           br(),
                           ########## Certificate 
                           h3("Create a certificate for your device"),
@@ -130,9 +134,9 @@ ui <- fluidPage(
                           fluidRow(
                             column( width = 6,
                                     textInput("name",
-                                              "Name:", value = "Enter your name"),
+                                              "Name of person using acoustic deterrent:", value = "Enter your name"),
                                     textInput("devicename",
-                                              "Deterrent name:", value = "Enter the name of your deterrent")
+                                              "Deterrent name (including manufacturer):", value = "Enter the name of your deterrent")
                             ), # end of col 1
                             column(width = 6,
                                    textAreaInput("characteristics","Deterrent characteristics, including assumptions:") )
@@ -172,7 +176,7 @@ ui <- fluidPage(
                             column(width = 12, 
                                    textOutput("deterlist"),
                                    br(),
-                                   textOutput(outputId = 'warningmessage'),
+                                   htmlOutput(outputId = 'warningmessage'),
                                    # p("If you do not see a 'Download certificate' button below, your device is not compliant with NMFS guidelines."),
                                    conditionalPanel(
                                      condition = "output.panelStatus",
@@ -195,11 +199,11 @@ ui <- fluidPage(
                       sidebarLayout(
                         sidebarPanel(
                           numericInput("frequency_lowest",
-                                       "Deterrent lowest frequency value (pitch) in kilohertz (kHz)",
+                                       "Deterrent lowest frequency (pitch) in kilohertz (kHz)",
                                        value = 0.5),
                           bsTooltip("frequency_lowest", frequency.note),
                           numericInput("frequency_highest",
-                                       "Deterrent highest frequency value (pitch) in kilohertz (kHz)",
+                                       "Deterrent highest frequency (pitch) in kilohertz (kHz)",
                                        value = 4),
                           bsTooltip("frequency_highest", frequency.note),
                           numericInput("max_loudness_m",
@@ -228,9 +232,10 @@ ui <- fluidPage(
                         
                         # Show a plot of the generated distribution
                         mainPanel(
-                          h3("Is your device in compliance?"),
+                          h3("Does your device meet NMFS criteria?"),
                           tableOutput("multiple.freq"),
                           HTML(criteria.note),
+                          br(),
                           br(),
                           ########## Certificate 
                           h3("Create a certificate for your device"),
@@ -238,9 +243,9 @@ ui <- fluidPage(
                           fluidRow(
                             column( width = 6,
                                     textInput("name2",
-                                              "Name:", value = "Enter your name"),
+                                              "Name of person using acoustic deterrent:", value = "Enter your name"),
                                     textInput("devicename2",
-                                              "Deterrent name:", value = "Enter the name of your deterrent")
+                                              "Deterrent name (including manufacturer):", value = "Enter the name of your deterrent")
                             ), # end of col 1
                             column(width = 6,
                                    textAreaInput("characteristics2","Deterrent characteristics, including assumptions:") )
@@ -284,7 +289,7 @@ ui <- fluidPage(
                             column(width = 12, 
                                    textOutput("deterlist2"),
                                    br(),
-                                   textOutput(outputId = 'warningmessage2'),
+                                   htmlOutput(outputId = 'warningmessage2'),
                                    # p("If you do not see a 'Download certificate' button below, your device is not compliant with NMFS guidelines."),
                                    conditionalPanel(
                                      condition = "output.panelStatus2",
@@ -304,6 +309,14 @@ ui <- fluidPage(
                       ) # end sidebarlayout format
              ), #end tab
              tabPanel("Help",
+                      h3("Useful conversions"),
+                      p("Here are unit conversions that may be helpful in finding and entering your device' information's specifications."),
+                      h4("Frequency"),
+                      p(frequency.note),
+                      h4("Pulse duration"),
+                      p(duration.note),
+                      br(),
+                      br(),
                       h3("Where are the specs for my device located?"),
                       p("Here are several examples of device specifications showing where to find the information you need to enter in this web tool."),
                       br(),
@@ -368,9 +381,9 @@ server <- function(input, output, session) {
     user.table.s %>%
       rename(`Hearing group` = hearing.group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-      mutate('Meets criteria' = ifelse(isopleth>100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
+      mutate('Meets criteria' = ifelse(isopleth>=100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
       mutate(isopleth = round(isopleth,digits = 1)) %>%
-      mutate(isopleth = ifelse(isopleth>100,
+      mutate(isopleth = ifelse(isopleth>=100,
                                           cell_spec(isopleth,background="red",color="white",bold=T),
                                           cell_spec(isopleth, background="green",color="white",bold=T))) %>%
       rename(`Minimum Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = isopleth) %>%
@@ -401,11 +414,12 @@ server <- function(input, output, session) {
       mutate(isopleth = round(isopleth,digits=1)) %>%
       rename(`Hearing group` = hearing.group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-      mutate('Meets criteria' = ifelse(isopleth>100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
-      mutate(`Distance (meters)` = ifelse(isopleth>100,
+      mutate(`Minimum Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = ifelse(isopleth>=100,
                                           cell_spec(isopleth,background="red",color="white",bold=T),
                                           cell_spec(isopleth, background="green",color="white",bold=T))) %>%
-      rename(`Minimum Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = isopleth) %>%
+      mutate('Meets criteria' = ifelse(isopleth>=100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
+      
+      select(-isopleth) %>%
       kable(escape=FALSE) %>% 
       kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
   }
@@ -420,10 +434,10 @@ server <- function(input, output, session) {
                                      propagation = propagation)) %>%
       select(hearing.group,isopleth) %>%
       mutate(isopleth = round(isopleth,digits=1)) %>%
-      rename(`Distance (meters)` = isopleth) %>%
+      #rename(`Distance (meters)` = isopleth) %>%
       rename(`Hearing group` = hearing.group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-      mutate('Meets criteria' = ifelse(`Distance (meters)`>100,"&#10006 <b> NO </b>","&#10004 Yes"))
+      mutate('Meets criteria' = ifelse(isopleth>=100,"&#10006 <b> NO </b>","&#10004 Yes"))
   )
   
   
@@ -451,13 +465,12 @@ server <- function(input, output, session) {
     user.table.m <- result.table.m %>% 
       select(hearing.group,isopleth) %>%
       mutate(isopleth = round(isopleth,digits=1)) %>%
-      rename(`Distance (meters)` = isopleth) %>%
+      #rename(`Distance (meters)` = isopleth) %>%
       rename(`Hearing group` = hearing.group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-      mutate('Meets criteria' = ifelse(`Distance (meters)`>100,"&#10006 <b> NO </b>","&#10004 Yes"))
+      mutate('Meets criteria' = ifelse(isopleth>=100,"&#10006 <b> NO </b>","&#10004 Yes"))
     
       user.table.m
-      #any(isopleth.table.out()$`Distance (meters)`>100)
   }
   )
   
@@ -522,20 +535,20 @@ server <- function(input, output, session) {
   # warning_single <- reactive(any(isopleth.table.out()$`Distance (meters)`>100))
   
   output$panelStatus <- reactive({
-    all(isopleth.table.out()$`Distance (meters)`<100)
+    all(isopleth.table.out()$isopleth<100)
   })
   outputOptions(output, "panelStatus", suspendWhenHidden = FALSE)
 
   output$panelStatus2 <- reactive({
-    all(isopleth.table.out2()$`Distance (meters)`<100)
+    all(isopleth.table.out2()$isopleth<100)
   })
   outputOptions(output, "panelStatus2", suspendWhenHidden = FALSE)
   
   
-  output$warningmessage <- renderText(ifelse(all(isopleth.table.out()$`Distance (meters)`<100),
+  output$warningmessage <- renderText(ifelse(all(isopleth.table.out()$isopleth<100),
                                              approve.note,
                                              notapprove.note))
-  output$warningmessage2 <- renderText(ifelse(all(isopleth.table.out2()$`Distance (meters)`<100),
+  output$warningmessage2 <- renderText(ifelse(all(isopleth.table.out2()$isopleth<100),
                                              approve.note,
                                              notapprove.note))
   
