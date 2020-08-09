@@ -177,7 +177,6 @@ ui <- fluidPage(
                                    textOutput("deterlist"),
                                    br(),
                                    htmlOutput(outputId = 'warningmessage'),
-                                   # p("If you do not see a 'Download certificate' button below, your device is not compliant with NMFS guidelines."),
                                    conditionalPanel(
                                      condition = "output.panelStatus",
                                       downloadBttn(outputId = "cert",label = "Download certificate",
@@ -290,7 +289,6 @@ ui <- fluidPage(
                                    textOutput("deterlist2"),
                                    br(),
                                    htmlOutput(outputId = 'warningmessage2'),
-                                   # p("If you do not see a 'Download certificate' button below, your device is not compliant with NMFS guidelines."),
                                    conditionalPanel(
                                      condition = "output.panelStatus2",
                                      downloadBttn(outputId = "cert2",label = "Generate certificate",
