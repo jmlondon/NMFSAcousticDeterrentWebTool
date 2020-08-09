@@ -10,7 +10,7 @@ library(shinythemes) # for theme
 library(shinyWidgets)
 
 
-publishing = F
+publishing = TRUE
 
 
 if(publishing){
@@ -385,7 +385,7 @@ server <- function(input, output, session) {
       mutate(isopleth = ifelse(isopleth>=100,
                                           cell_spec(isopleth,background="red",color="white",bold=T),
                                           cell_spec(isopleth, background="green",color="white",bold=T))) %>%
-      rename(`Minimum Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = isopleth) %>%
+      rename(`Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = isopleth) %>%
       kable(escape=FALSE) %>% 
       kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
   }
@@ -413,7 +413,7 @@ server <- function(input, output, session) {
       mutate(isopleth = round(isopleth,digits=1)) %>%
       rename(`Hearing group` = hearing.group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
-      mutate(`Minimum Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = ifelse(isopleth>=100,
+      mutate(`Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = ifelse(isopleth>=100,
                                           cell_spec(isopleth,background="red",color="white",bold=T),
                                           cell_spec(isopleth, background="green",color="white",bold=T))) %>%
       mutate('Meets criteria' = ifelse(isopleth>=100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
@@ -533,23 +533,25 @@ server <- function(input, output, session) {
   # 
   # warning_single <- reactive(any(isopleth.table.out()$`Distance (meters)`>100))
   
+  # If all isopleths < 100 and species are not two of the ESA-listed ones, allow certificate, otherwise give warning
   output$panelStatus <- reactive({
-    all(isopleth.table.out()$isopleth<100)
+    all(isopleth.table.out()$isopleth<100) & !any(grep("Beluga whale",dlist())) & !any(grep("False killer whale",dlist()))
   })
   outputOptions(output, "panelStatus", suspendWhenHidden = FALSE)
 
   output$panelStatus2 <- reactive({
-    all(isopleth.table.out2()$isopleth<100)
+    all(isopleth.table.out2()$isopleth<100) & !any(grep("Beluga whale",dlist2())) & !any(grep("False killer whale",dlist2()))
   })
   outputOptions(output, "panelStatus2", suspendWhenHidden = FALSE)
   
-  
   output$warningmessage <- renderText(ifelse(all(isopleth.table.out()$isopleth<100),
-                                             approve.note,
-                                             notapprove.note))
+                                             ifelse(!any(grep("Beluga whale",dlist())) & !any(grep("False killer whale",dlist())),
+                                                    approve.note,
+                                             notapproveESA.note),notapprove.note))
   output$warningmessage2 <- renderText(ifelse(all(isopleth.table.out2()$isopleth<100),
-                                             approve.note,
-                                             notapprove.note))
+                                              ifelse(!any(grep("Beluga whale",dlist2())) & !any(grep("False killer whale",dlist2())),
+                                                     approve.note,
+                                                     notapproveESA.note),notapprove.note))
   
   output$cert <- downloadHandler(
     filename = "certificate.html",
