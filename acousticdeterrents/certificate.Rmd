@@ -92,11 +92,11 @@ x %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-## NMFS evaluation criteria
-```{r echo = FALSE}
-y <- params$isopleth.table
-y  %>%
-  select(-isopleth) %>%
-  kable(escape=FALSE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
-```
+<!-- ## NMFS evaluation criteria -->
+<!-- ```{r echo = FALSE} -->
+<!-- # y <- params$isopleth.table -->
+<!-- # y  %>% -->
+<!-- #   select(-isopleth) %>% -->
+<!-- #   kable(escape=FALSE) %>% -->
+<!-- #   kable_styling(bootstrap_options = c("striped", "hover", "condensed")) -->
+<!-- ``` -->

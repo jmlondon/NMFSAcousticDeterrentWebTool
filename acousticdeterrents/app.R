@@ -10,7 +10,7 @@ library(shinythemes) # for theme
 library(shinyWidgets)
 
 
-publishing = TRUE
+publishing = F
 
 
 if(publishing){
@@ -76,7 +76,8 @@ ui <- fluidPage(
                         tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:green", "green"), sep = "")), "if your device meets NMFS's evaluation criteria for deterring marine mammals and a certificate will be provided."),
                         tags$li("The cells will contain the distance (meters) to onset of permanent hearing loss by each marine mammal hearing group."),
                         tags$li("You are required to deploy the device at least as far away as noted in the cell."),
-                        tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:red", "red"), sep = ""))," if the device does not meet NMFS's evaluation criteria.")
+                        tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:red", "red"), sep = ""))," if the device does not meet NMFS's evaluation criteria."),
+                        tags$li("If your device meets NMFS's evaluation criteria for all hearing groups, a certificate documenting the device's specifications will be generated.  Certificates are valid for 1 year from date of issue.")
                       ),
                       br(),
                       
@@ -86,7 +87,7 @@ ui <- fluidPage(
                       
                       h3("NMFS Evaluation Criteria"),
                       tags$ol(
-                        tags$li("Acoustic deterrents that have the potential to result in the onset of a permanent threshold shift (PTS) at distances &ge;100 m from the source after an hour of exposure would not meet NMFS's evaluation criteria."),
+                        tags$li("Acoustic deterrents that have the potential to result in the onset of a permanent threshold shift (PTS) at distances ≥100 m from the source after an hour of exposure would not meet NMFS's evaluation criteria."),
                         tags$li("PTS onset thresholds are based on the", a("2018 revision to Technical Guidance for Assessing the Effects of Anthropogenic Sound on Marine Mammal Hearing (Version 2.0)",href=" https://www.fisheries.noaa.gov/national/marine-mammal-protection/marine-mammal-acoustic-technical-guidance")))
                       
              ),
