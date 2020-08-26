@@ -16,6 +16,7 @@ params:
   characteristics: NA
   isopleth.table: NA
   species.to.deter: NA
+  ESA: NA
 ---
 
 ```{css, echo=FALSE}
@@ -36,7 +37,7 @@ htmltools::img(src = knitr::image_uri(here::here("NOAA_logo.svg")),
                style = 'position:absolute; top:0; right:0; padding:10px; width: 100px')
 ```
 
-<div class="watermark" align="center">CERTIFICATE</div>
+<div class="watermark" align="center">CERTIFICATE NOT VALID UNTIL GUIDELINES FINALIZED</div>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -55,8 +56,10 @@ characteristics = params$characteristics
 expiration = Sys.Date() + 365
 isopleth.table = params$isopleth.table
 species.to.deter = params$species.to.deter
+ESA = params$ESA
 ```
 
+`r ESA`
 
 `r name` is approved to use the deterrent noted below according to the following specifications until `r expiration`. 
 

@@ -24,9 +24,9 @@ if(publishing){
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-                title = "NMFS Acoustic Deterrent Web Tool",
-                titlePanel(div(column(width = 12,
-                           tags$img(src = "NOAA_logo.svg",width="60",height="60",align="right")))),
+  title = "NMFS Acoustic Deterrent Web Tool",
+  titlePanel(div(column(width = 12,
+                        tags$img(src = "NOAA_logo.svg",width="60",height="60",align="right")))),
   br(),
   br(),
   titlePanel("National Marine Fisheries Service (NMFS) Acoustic Deterrent Web Tool"), 
@@ -74,8 +74,6 @@ ui <- fluidPage(
                       tags$ol(
                         tags$li("Complete fields with the device's specifications"),
                         tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:green", "green"), sep = "")), "if your device meets NMFS's evaluation criteria for deterring marine mammals and a certificate will be provided."),
-                        tags$li("The cells will contain the distance (meters) to onset of permanent hearing loss by each marine mammal hearing group."),
-                        tags$li("You are required to deploy the device at least as far away as noted in the cell."),
                         tags$li(HTML(paste("Output cells will turn ", tags$span(style="color:red", "red"), sep = ""))," if the device does not meet NMFS's evaluation criteria."),
                         tags$li("If your device meets NMFS's evaluation criteria for all hearing groups, a certificate documenting the device's specifications will be generated.  Certificates are valid for 1 year from date of issue.")
                       ),
@@ -94,12 +92,14 @@ ui <- fluidPage(
              tabPanel("Single frequency",
                       sidebarLayout(
                         sidebarPanel(
+                          h4("Enter device specifications"),
+                          br(),
                           numericInput("frequency",
                                        "Deterrent frequency (pitch) in kilohertz (kHz)",
-                                       value = 1),
+                                       value = NA),
                           bsTooltip("frequency", frequency.note),
                           numericInput("max_loudness",
-                                       "Maximum loudness in decibels (dB; average source level at 1 m from source in RMS SPL)", value = 174),
+                                       "Maximum loudness in decibels (dB; average source level at 1 m from source in RMS SPL)", value = NA),
                           bsTooltip("max_loudness", loudness.note),
                           radioButtons(inputId = 'duty_cycle_decide',
                                        label = "Do you have a duty cycle to enter?",
@@ -107,17 +107,17 @@ ui <- fluidPage(
                                                    "No, calculate duty cycle from signal duration and silent period" = "calculate")),
                           conditionalPanel(condition = "input.duty_cycle_decide=='direct'",
                                            numericInput("duty_cycle_manual",
-                                                        label = "Duty cycle (%):",value = 50, min = 1,max = 100),
+                                                        label = "Duty cycle (%):",value = NA, min = 1,max = 100),
                                            bsTooltip("duty_cycle_manual", duty.cycle.note)),
                           
                           conditionalPanel(condition = "input.duty_cycle_decide=='calculate'",
                                            numericInput("max_ping_dur",
                                                         "Maximum acoustic signal duration (seconds)",
-                                                        value = 9),
+                                                        value = NA),
                                            bsTooltip("max_ping_dur", duration.note),
                                            numericInput("min_silent",
                                                         "Minimum silent period between acoustic signals (seconds)",
-                                                        value=4)
+                                                        value=NA)
                           )
                           
                         ),
@@ -180,11 +180,11 @@ ui <- fluidPage(
                                    htmlOutput(outputId = 'warningmessage'),
                                    conditionalPanel(
                                      condition = "output.panelStatus",
-                                      downloadBttn(outputId = "cert",label = "Download certificate",
-                                                color = "success",
-                                                style = "pill",
-                                                size="md",
-                                                block = TRUE)
+                                     downloadBttn(outputId = "cert",label = "Download certificate",
+                                                  color = "success",
+                                                  style = "pill",
+                                                  size="md",
+                                                  block = TRUE)
                                    ),
                                    br(),
                                    br()
@@ -198,16 +198,18 @@ ui <- fluidPage(
              tabPanel("Multiple frequencies",
                       sidebarLayout(
                         sidebarPanel(
+                          h4("Enter device specifications"),
+                          br(),
                           numericInput("frequency_lowest",
                                        "Deterrent lowest frequency (pitch) in kilohertz (kHz)",
-                                       value = 0.5),
+                                       value = NA),
                           bsTooltip("frequency_lowest", frequency.note),
                           numericInput("frequency_highest",
                                        "Deterrent highest frequency (pitch) in kilohertz (kHz)",
-                                       value = 4),
+                                       value = NA),
                           bsTooltip("frequency_highest", frequency.note),
                           numericInput("max_loudness_m",
-                                       "Maximum loudness in decibels (dB; average source level at 1 m from source in RMS SPL)", value = 174),
+                                       "Maximum loudness in decibels (dB; average source level at 1 m from source in RMS SPL)", value = NA),
                           bsTooltip("max_loudness_m", loudness.note),
                           radioButtons(inputId = 'duty_cycle_decide_m',
                                        label = "Do you have a duty cycle to enter?",
@@ -215,17 +217,18 @@ ui <- fluidPage(
                                                    "No, calculate duty cycle from signal duration and silent period" = "calculate")),
                           conditionalPanel(condition = "input.duty_cycle_decide_m=='direct'",
                                            numericInput("duty_cycle_manual_m",
-                                                        label = "Duty cycle (%):",value = 50, min = 1,max = 100),
+                                                        label = "Duty cycle (%):",
+                                                        value = NA, min = 1,max = 100),
                                            bsTooltip("duty_cycle_manual_m", duty.cycle.note)
                           ),
                           conditionalPanel(condition = "input.duty_cycle_decide_m=='calculate'",
                                            numericInput("max_ping_dur_m",
                                                         "Maximum acoustic signal duration (seconds)",
-                                                        value = 9),
+                                                        value = NA),
                                            bsTooltip("max_ping_dur_m", duration.note),
                                            numericInput("min_silent_m",
                                                         "Minimum silent period between acoustic signals (seconds)",
-                                                        value=4)
+                                                        value=NA)
                           )
                           
                         ),
@@ -331,8 +334,8 @@ ui <- fluidPage(
                       h4("Example #4"),
                       tags$img(src = 'images/Slide4.png',width = 800),
                       br()
-                      )
-
+             )
+             
   ) # end navbarpage
 ) # end ui
 
@@ -375,23 +378,23 @@ server <- function(input, output, session) {
     
     # in shiny, add conditional formatting to the table
     user.table.s <- result.table.s %>%
-      select(hearing.group,isopleth)
+      select(hearing_group,isopleth)
     
     user.table.s %>%
-      rename(`Hearing group` = hearing.group) %>%
+      rename(`Hearing group` = hearing_group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
       mutate('Meets criteria' = ifelse(isopleth>=100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
       mutate(isopleth = round(isopleth,digits = 1)) %>%
       mutate(isopleth = ifelse(isopleth>=100,
-                                          cell_spec(isopleth,background="red",color="white",bold=T),
-                                          cell_spec(isopleth, background="green",color="white",bold=T))) %>%
+                               cell_spec(isopleth,background="red",color="white",bold=T),
+                               cell_spec(isopleth, background="green",color="white",bold=T))) %>%
       rename(`Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = isopleth) %>%
       kable(escape=FALSE) %>% 
       kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
   }
   
   output$multiple.freq <- function(){
-    by.hearing <- data.frame(hearing.group = hearing.group,
+    by.hearing <- data.frame(hearing_group = hearing_group,
                              x = c(1.7,28,42,6.2,4.9)) %>% 
       mutate(freq.by.group = ifelse(x>=input$frequency_lowest & x <=input$frequency_highest,x,
                                     ifelse(x>input$frequency_lowest & x>input$frequency_highest,input$frequency_highest,
@@ -409,13 +412,13 @@ server <- function(input, output, session) {
                                      propagation = propagation))
     
     user.table.m <- result.table.m %>% 
-      select(hearing.group,isopleth) %>%
+      select(hearing_group,isopleth) %>%
       mutate(isopleth = round(isopleth,digits=1)) %>%
-      rename(`Hearing group` = hearing.group) %>%
+      rename(`Hearing group` = hearing_group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
       mutate(`Distance(s) for Deploying Deterrent from Marine Mammal (meters)` = ifelse(isopleth>=100,
-                                          cell_spec(isopleth,background="red",color="white",bold=T),
-                                          cell_spec(isopleth, background="green",color="white",bold=T))) %>%
+                                                                                        cell_spec(isopleth,background="red",color="white",bold=T),
+                                                                                        cell_spec(isopleth, background="green",color="white",bold=T))) %>%
       mutate('Meets criteria' = ifelse(isopleth>=100,"&#10006 <b> NO </b>","&#10004 Yes")) %>%
       
       select(-isopleth) %>%
@@ -431,20 +434,17 @@ server <- function(input, output, session) {
                                      log10dur = log10dur(),
                                      selcumthresh = SELcum,
                                      propagation = propagation)) %>%
-      select(hearing.group,isopleth) %>%
+      select(hearing_group,isopleth) %>%
       mutate(isopleth = round(isopleth,digits=1)) %>%
       #rename(`Distance (meters)` = isopleth) %>%
-      rename(`Hearing group` = hearing.group) %>%
+      rename(`Hearing group` = hearing_group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
       mutate('Meets criteria' = ifelse(isopleth>=100,"&#10006 <b> NO </b>","&#10004 Yes"))
   )
   
   
   isopleth.table.out2 <- reactive({ #multiple freq
-    #print(any(isopleth.table.out()$`Distance (meters)`>=100))
-    
-    
-    by.hearing <- data.frame(hearing.group = hearing.group,
+    by.hearing <- data.frame(hearing_group = hearing_group,
                              x = c(1.7,28,42,6.2,4.9)) %>% 
       mutate(freq.by.group = ifelse(x>=input$frequency_lowest & x <=input$frequency_highest,x,
                                     ifelse(x>input$frequency_lowest & x>input$frequency_highest,input$frequency_highest,
@@ -462,14 +462,14 @@ server <- function(input, output, session) {
                                      propagation = propagation))
     
     user.table.m <- result.table.m %>% 
-      select(hearing.group,isopleth) %>%
+      select(hearing_group,isopleth) %>%
       mutate(isopleth = round(isopleth,digits=1)) %>%
       #rename(`Distance (meters)` = isopleth) %>%
-      rename(`Hearing group` = hearing.group) %>%
+      rename(`Hearing group` = hearing_group) %>%
       mutate(`Hearing group` = recode(`Hearing group`,!!!hgkey)) %>%
       mutate('Meets criteria' = ifelse(isopleth>=100,"&#10006 <b> NO </b>","&#10004 Yes"))
     
-      user.table.m
+    user.table.m
   }
   )
   
@@ -530,28 +530,33 @@ server <- function(input, output, session) {
   #   }
   # })
   # shinyjs::disable(id = "cert_yn")
-  # 
-  # warning_single <- reactive(any(isopleth.table.out()$`Distance (meters)`>100))
+  
   
   # If all isopleths < 100 and species are not two of the ESA-listed ones, allow certificate, otherwise give warning
   output$panelStatus <- reactive({
-    all(isopleth.table.out()$isopleth<100) & !any(grep("Beluga whale",dlist())) & !any(grep("False killer whale",dlist()))
+    all(isopleth.table.out()$isopleth<100) #& !any(grep("Beluga whale",dlist())) & !any(grep("False killer whale",dlist()))
   })
   outputOptions(output, "panelStatus", suspendWhenHidden = FALSE)
-
+  
   output$panelStatus2 <- reactive({
-    all(isopleth.table.out2()$isopleth<100) & !any(grep("Beluga whale",dlist2())) & !any(grep("False killer whale",dlist2()))
+    all(isopleth.table.out2()$isopleth<100) #& !any(grep("Beluga whale",dlist2())) & !any(grep("False killer whale",dlist2()))
   })
   outputOptions(output, "panelStatus2", suspendWhenHidden = FALSE)
   
   output$warningmessage <- renderText(ifelse(all(isopleth.table.out()$isopleth<100),
-                                             ifelse(!any(grep("Beluga whale",dlist())) & !any(grep("False killer whale",dlist())),
-                                                    approve.note,
-                                             notapproveESA.note),notapprove.note))
+                                             #  ifelse(!any(grep("Beluga whale",dlist())) & !any(grep("False killer whale",dlist())),
+                                             approve.note,
+                                             notapprove.note))
   output$warningmessage2 <- renderText(ifelse(all(isopleth.table.out2()$isopleth<100),
-                                              ifelse(!any(grep("Beluga whale",dlist2())) & !any(grep("False killer whale",dlist2())),
-                                                     approve.note,
-                                                     notapproveESA.note),notapprove.note))
+                                              # ifelse(!any(grep("Beluga whale",dlist2())) & !any(grep("False killer whale",dlist2())),
+                                              approve.note,
+                                              notapprove.note))
+  
+  # If beluga or false killer whale checked, print statement on certificate
+  ESAwarning <- reactive({ifelse(any(grep("Beluga whale",dlist())) | any(grep("False killer whale",dlist())), 
+                                 notapproveESA.note, NA)})
+  ESAwarning2 <- reactive({ifelse(any(grep("Beluga whale",dlist2())) | any(grep("False killer whale",dlist2())), 
+                                  notapproveESA.note, NA)})
   
   output$cert <- downloadHandler(
     filename = "certificate.html",
@@ -571,7 +576,8 @@ server <- function(input, output, session) {
                      devicename = input$devicename,
                      characteristics = input$characteristics,
                      isopleth.table = isopleth.table.out(),
-                     species.to.deter = dlist()
+                     species.to.deter = dlist(),
+                     ESA = ESAwarning()
       )
       
       rmarkdown::render(tempReport, output_file = file,
@@ -586,7 +592,7 @@ server <- function(input, output, session) {
     content = function(file) {
       tempReport <- file.path(tempdir(), "certificate_multi.Rmd")
       file.copy("certificate_multi.Rmd", tempReport, overwrite = TRUE)
-
+      
       params <- list(lowest_frequency = input$frequency_lowest,
                      highest_frequency = input$frequency_highest,
                      max_loudness = input$max_loudness_m, # also called "source level"
@@ -597,7 +603,8 @@ server <- function(input, output, session) {
                      devicename = input$devicename2,
                      characteristics = input$characteristics2,
                      isopleth.table = isopleth.table.out2(),
-                     species.to.deter = dlist2()
+                     species.to.deter = dlist2(),
+                     ESA = ESAwarning2()
       )
       
       rmarkdown::render(tempReport, output_file = file,

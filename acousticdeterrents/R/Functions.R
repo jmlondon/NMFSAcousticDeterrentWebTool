@@ -21,7 +21,6 @@ get.isopleth <- function(max.loudness,adjustment,log10dur,selcumthresh,propagati
 }
 
 
-
 #  Test get.adjustment ----------------------------------------------------
 
 # Define weighting pars for each mammal type
