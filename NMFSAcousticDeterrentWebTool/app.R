@@ -8,7 +8,7 @@ library(formattable)
 library(shinyBS) # for tooltips
 library(shinythemes) # for theme
 library(shinyWidgets)
-
+#rsconnect::deployApp(here::here('NMFSAcousticDeterrentWebTool'))
 
 publishing = TRUE
 
@@ -17,8 +17,8 @@ if(publishing){
   source(here('R','Functions.R'))
   source(here('R','Constants.R'))
 }else{
-  source(here('acousticdeterrents','R','Functions.R'))
-  source(here('acousticdeterrents','R','Constants.R'))
+  source(here('NMFSAcousticDeterrentWebTool','R','Functions.R'))
+  source(here('NMFSAcousticDeterrentWebTool','R','Constants.R'))
 }
 
 
